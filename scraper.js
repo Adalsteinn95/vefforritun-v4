@@ -2,6 +2,10 @@ require('dotenv').config();
 
 /* todo require og stilla dót */
 
+const cheerio = require('cheerio');
+
+require('isomorphic-fetch');
+
 /**
  * Listi af sviðum með „slug“ fyrir vefþjónustu og viðbættum upplýsingum til
  * að geta sótt gögn.
@@ -37,8 +41,14 @@ const departments = [
  */
 async function getTests(slug) {
   /* todo */
-}
+  const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=4&notaVinnuToflu=0`);
+  const result = await response.text();
 
+  const $ = cheerio.load(result);
+
+  const table = $('td');
+
+}
 /**
  * Hreinsar cache.
  *
