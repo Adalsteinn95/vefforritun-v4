@@ -39,6 +39,7 @@ const departments = [{
  * @returns {Promise} Promise sem mun innihalda gögn fyrir svið eða null ef það finnst ekki
  */
 async function getTests(slug) {
+
   /* todo */
   const response = await fetch('https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=5&notaVinnuToflu=0');
   const result = await response.text();
@@ -58,34 +59,45 @@ async function getTests(slug) {
   $('table tbody').each((i, element) => {
     $(element).find('td:nth-child(1)').each((item, course) => {
       courses.push({
-        course: $(course).text(),
+        course: { i, course: $(course).text() },
       });
     });
     $(element).find('td:nth-child(2)').each((item, course) => {
       name.push({
-        name: $(course).text(),
+        name: { i, name: $(course).text() },
       });
     });
     $(element).find('td:nth-child(3)').each((item, course) => {
       type.push({
-        type: $(course).text(),
+        type: { i, type: $(course).text() },
       });
     });
     $(element).find('td:nth-child(4)').each((item, course) => {
       students.push({
-        students: $(course).text(),
+        students: { i, students: $(course).text() },
       });
     });
     $(element).find('td:nth-child(5)').each((item, course) => {
       date.push({
-        date: $(course).text(),
+        date: { i, date: $(course).text() },
       });
     });
   });
 
-  courses.forEach((i) => {
-    console.info(i);
+  console.info(courses);
+
+  const finalresult = [];
+  courses.forEach((i, index) => {
+    finalresult[index] = ({
+      course: i.course,
+      name: name[index].name,
+      type: type[index].type,
+      students: students[index].students,
+      date: date[index].date,
+    });
   });
+
+  return finalresult;
 }
 /**
  * Hreinsar cache.
