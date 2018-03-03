@@ -41,13 +41,22 @@ const departments = [
  */
 async function getTests(slug) {
   /* todo */
-  const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=4&notaVinnuToflu=0`);
+  const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=5&notaVinnuToflu=0`);
   const result = await response.text();
 
-  const $ = cheerio.load(result);
+  const $ = cheerio.load(JSON.parse(result).html);
 
-  const table = $('td');
+  const headers = [];
+  $('h3').each((i, element) => {
+    headers[i] = $(element).text().trim();
+  });
 
+  const courses = [];
+  $('table tbody').map((i, element) => {
+    courses[i] = $(element).find('td:nth-child(1)').text();
+  });
+
+  console.info(courses[0]);
 }
 /**
  * Hreinsar cache.
