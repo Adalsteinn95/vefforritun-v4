@@ -10,8 +10,7 @@ require('isomorphic-fetch');
  * Listi af sviðum með „slug“ fyrir vefþjónustu og viðbættum upplýsingum til
  * að geta sótt gögn.
  */
-const departments = [
-  {
+const departments = [{
     name: 'Félagsvísindasvið',
     slug: 'felagsvisindasvid',
   },
@@ -41,7 +40,7 @@ const departments = [
  */
 async function getTests(slug) {
   /* todo */
-  const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=5&notaVinnuToflu=0`);
+  const response = await fetch('https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=5&notaVinnuToflu=0');
   const result = await response.text();
 
   const $ = cheerio.load(JSON.parse(result).html);
@@ -52,11 +51,41 @@ async function getTests(slug) {
   });
 
   const courses = [];
-  $('table tbody').map((i, element) => {
-    courses[i] = $(element).find('td:nth-child(1)').text();
+  const name = [];
+  const type = [];
+  const students = [];
+  const date = [];
+  $('table tbody').each((i, element) => {
+    $(element).find('td:nth-child(1)').each((item, course) => {
+      courses.push({
+        course: $(course).text(),
+      });
+    });
+    $(element).find('td:nth-child(2)').each((item, course) => {
+      name.push({
+        name: $(course).text(),
+      });
+    });
+    $(element).find('td:nth-child(3)').each((item, course) => {
+      type.push({
+        type: $(course).text(),
+      });
+    });
+    $(element).find('td:nth-child(4)').each((item, course) => {
+      students.push({
+        students: $(course).text(),
+      });
+    });
+    $(element).find('td:nth-child(5)').each((item, course) => {
+      date.push({
+        date: $(course).text(),
+      });
+    });
   });
 
-  console.info(courses[0]);
+  courses.forEach((i) => {
+    console.info(i);
+  });
 }
 /**
  * Hreinsar cache.
