@@ -11,7 +11,7 @@ const util = require('util');
 
 const redisOptions = {
   url: 'redis://127.0.0.1:6379/0',
-}
+};
 
 const client = redis.createClient(redisOptions);
 
@@ -23,25 +23,25 @@ const asyncClear = util.promisify(client.flushdb).bind(client);
  * að geta sótt gögn.
  */
 const departments = [{
-    name: 'Félagsvísindasvið',
-    slug: 'felagsvisindasvid',
-  },
-  {
-    name: 'Heilbrigðisvísindasvið',
-    slug: 'heilbrigdisvisindasvid',
-  },
-  {
-    name: 'Hugvísindasvið',
-    slug: 'hugvisindasvid',
-  },
-  {
-    name: 'Menntavísindasvið',
-    slug: 'menntavisindasvid',
-  },
-  {
-    name: 'Verkfræði- og náttúruvísindasvið',
-    slug: 'verkfraedi-og-natturuvisindasvid',
-  },
+  name: 'Félagsvísindasvið',
+  slug: 'felagsvisindasvid',
+},
+{
+  name: 'Heilbrigðisvísindasvið',
+  slug: 'heilbrigdisvisindasvid',
+},
+{
+  name: 'Hugvísindasvið',
+  slug: 'hugvisindasvid',
+},
+{
+  name: 'Menntavísindasvið',
+  slug: 'menntavisindasvid',
+},
+{
+  name: 'Verkfræði- og náttúruvísindasvið',
+  slug: 'verkfraedi-og-natturuvisindasvid',
+},
 ];
 
 /**
@@ -135,7 +135,7 @@ async function getStats() {
 
   let numStudents = 0;
   let numTests = 0;
-  let everyNum = [];
+  const everyNum = [];
   result.forEach((i) => {
     i.forEach((key) => {
       key.tests.forEach((item) => {
