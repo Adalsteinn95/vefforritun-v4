@@ -5,7 +5,19 @@ require('dotenv').config();
 const cheerio = require('cheerio');
 
 require('isomorphic-fetch');
+const redis = require('redis');
+const util = require('util');
 
+
+const redisOptions = {
+  url: 'redis://127.0.0.1:6379/0',
+}
+
+const client = redis.createClient(redisOptions);
+
+const asyncGet = util.promisify(client.get).bind(client);
+const asyncSet = util.promisify(client.set).bind(client);
+const asyncClear = util.promisify(client.flushdb).bind(client);
 /**
  * Listi af sviðum með „slug“ fyrir vefþjónustu og viðbættum upplýsingum til
  * að geta sótt gögn.
@@ -39,8 +51,20 @@ const departments = [{
  * @returns {Promise} Promise sem mun innihalda gögn fyrir svið eða null ef það finnst ekki
  */
 async function getTests(slug) {
-  /* todo */
-  const response = await fetch('https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=5&notaVinnuToflu=0');
+  const cached = await asyncGet(slug);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  let index = 0;
+  await departments.forEach((i, item) => {
+    if (slug === i.slug) {
+      index = item + 1;
+    }
+  });
+
+  const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=${index}&notaVinnuToflu=0`);
+
   const result = await response.text();
 
   const $ = cheerio.load(JSON.parse(result).html);
@@ -69,10 +93,14 @@ async function getTests(slug) {
     });
     finalResult.push({
       heading: headers[i],
-      tests: courses
+      tests: courses,
     });
     courses = [];
   });
+
+  /* redis test */
+
+  await asyncSet(slug, JSON.stringify(finalResult), 'EX', 30);
 
   return finalResult;
 }
@@ -83,6 +111,12 @@ async function getTests(slug) {
  */
 async function clearCache() {
   /* todo */
+  const result = await asyncClear();
+  if (result === 'OK') {
+    return true;
+  }
+
+  return false;
 }
 
 /**
@@ -92,6 +126,36 @@ async function clearCache() {
  */
 async function getStats() {
   /* todo */
+  const data = [];
+  departments.forEach((i) => {
+    data.push(getTests(i.slug));
+  });
+
+  const result = await Promise.all(data);
+
+  let numStudents = 0;
+  let numTests = 0;
+  let everyNum = [];
+  result.forEach((i) => {
+    i.forEach((key) => {
+      key.tests.forEach((item) => {
+        const num = parseInt(item.students, 10);
+        numStudents += 1;
+        numTests += num;
+        everyNum.push(num);
+      });
+    });
+  });
+
+  console.info(everyNum);
+
+  return {
+    min: Math.min(...everyNum),
+    max: Math.max(...everyNum),
+    numTests,
+    numStudents,
+    averageStudents: numTests / numStudents,
+  };
 }
 
 module.exports = {
