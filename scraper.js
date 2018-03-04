@@ -51,53 +51,17 @@ async function getTests(slug) {
     headers[i] = $(element).text().trim();
   });
 
-  const courses = [];
-  const name = [];
-  const type = [];
-  const students = [];
-  const date = [];
-  $('table tbody').each((i, element) => {
-    $(element).find('td:nth-child(1)').each((item, course) => {
-      courses.push({
-        course: { i, course: $(course).text() },
-      });
+  let courses = [];
+  const departments = [];
+  $('table').each((i, element) => {
+    $(element).find(`tbody tr`).each((item, course) => {
+      courses.push($(course).find('td').text());
     });
-    $(element).find('td:nth-child(2)').each((item, course) => {
-      name.push({
-        name: { i, name: $(course).text() },
-      });
-    });
-    $(element).find('td:nth-child(3)').each((item, course) => {
-      type.push({
-        type: { i, type: $(course).text() },
-      });
-    });
-    $(element).find('td:nth-child(4)').each((item, course) => {
-      students.push({
-        students: { i, students: $(course).text() },
-      });
-    });
-    $(element).find('td:nth-child(5)').each((item, course) => {
-      date.push({
-        date: { i, date: $(course).text() },
-      });
-    });
+    departments.push({ heading: headers[i], tests: courses });
+    courses = [];
   });
 
-  console.info(courses);
-
-  const finalresult = [];
-  courses.forEach((i, index) => {
-    finalresult[index] = ({
-      course: i.course,
-      name: name[index].name,
-      type: type[index].type,
-      students: students[index].students,
-      date: date[index].date,
-    });
-  });
-
-  return finalresult;
+  return departments;
 }
 /**
  * Hreinsar cache.
