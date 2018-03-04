@@ -39,7 +39,6 @@ const departments = [{
  * @returns {Promise} Promise sem mun innihalda gögn fyrir svið eða null ef það finnst ekki
  */
 async function getTests(slug) {
-
   /* todo */
   const response = await fetch('https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=5&notaVinnuToflu=0');
   const result = await response.text();
@@ -52,22 +51,30 @@ async function getTests(slug) {
   });
 
   let courses = [];
-  const departments = [];
+  const finalResult = [];
   let values = [];
   $('table').each((i, element) => {
     $(element).find('tbody tr').each((item, course) => {
       $(course).find('td').each((key, value) => {
         values.push($(value).text());
       });
-
-      courses.push({ values });
+      courses.push({
+        course: values[0],
+        name: values[1],
+        type: values[2],
+        students: values[3],
+        date: values[4],
+      });
       values = [];
     });
-    departments.push({ heading: headers[i], tests: courses });
+    finalResult.push({
+      heading: headers[i],
+      tests: courses
+    });
     courses = [];
   });
 
-  return departments;
+  return finalResult;
 }
 /**
  * Hreinsar cache.
