@@ -53,9 +53,15 @@ async function getTests(slug) {
 
   let courses = [];
   const departments = [];
+  let values = [];
   $('table').each((i, element) => {
-    $(element).find(`tbody tr`).each((item, course) => {
-      courses.push($(course).find('td').text());
+    $(element).find('tbody tr').each((item, course) => {
+      $(course).find('td').each((key, value) => {
+        values.push($(value).text());
+      });
+
+      courses.push({ values });
+      values = [];
     });
     departments.push({ heading: headers[i], tests: courses });
     courses = [];
