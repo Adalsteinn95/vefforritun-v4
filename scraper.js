@@ -140,8 +140,8 @@ async function getStats() {
     i.forEach((key) => {
       key.tests.forEach((item) => {
         const num = parseInt(item.students, 10);
-        numStudents += 1;
-        numTests += num;
+        numTests += 1;
+        numStudents += num;
         everyNum.push(num);
       });
     });
@@ -154,7 +154,7 @@ async function getStats() {
     max: Math.max(...everyNum),
     numTests,
     numStudents,
-    averageStudents: numTests / numStudents,
+    averageStudents: numStudents / numTests,
   };
 }
 
