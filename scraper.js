@@ -56,7 +56,7 @@ async function getTests(slug) {
     return JSON.parse(cached);
   }
 
-  let index = 0;
+  let index;
   await departments.forEach((i, item) => {
     if (slug === i.slug) {
       index = item + 1;
@@ -112,6 +112,7 @@ async function getTests(slug) {
 async function clearCache() {
   /* todo */
   const result = await asyncClear();
+
   if (result === 'OK') {
     return true;
   }
