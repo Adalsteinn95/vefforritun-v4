@@ -63,6 +63,9 @@ async function getTests(slug) {
     }
   });
 
+  if(index === undefined){
+    return null;
+  }
   const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=${index}&notaVinnuToflu=0`);
 
   const result = await response.text();
