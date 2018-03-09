@@ -63,9 +63,10 @@ async function getTests(slug) {
     }
   });
 
-  if(index === undefined){
+  if (index === undefined) {
     return null;
   }
+
   const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=${index}&notaVinnuToflu=0`);
 
   const result = await response.text();
@@ -100,8 +101,6 @@ async function getTests(slug) {
     });
     courses = [];
   });
-
-  /* redis test */
 
   await asyncSet(slug, JSON.stringify(finalResult), 'EX', 30);
 
@@ -150,8 +149,6 @@ async function getStats() {
       });
     });
   });
-
-  console.info(everyNum);
 
   return {
     min: Math.min(...everyNum),
