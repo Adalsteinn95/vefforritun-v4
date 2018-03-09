@@ -44,30 +44,22 @@ const departments = [{
 },
 ];
 
+
 /**
- * Sækir svið eftir `slug`. Fáum gögn annaðhvort beint frá vef eða úr cache.
+ * gets the info abut tests
  *
- * @param {string} slug - Slug fyrir svið sem skal sækja
- * @returns {Promise} Promise sem mun innihalda gögn fyrir svið eða null ef það finnst ekki
+ * @param {number} index - index of the department
+ * @param {string} slug - name of the department
+ *
+ * @returns {Promist} - promise representing array of all sub departments and tests
  */
-async function getTests(slug) {
-  const cached = await asyncGet(slug);
-  if (cached) {
-    return JSON.parse(cached);
-  }
+async function scrape(index, slug) {
+  const PRE = 'https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=';
 
-  let index;
-  await departments.forEach((i, item) => {
-    if (slug === i.slug) {
-      index = item + 1;
-    }
-  });
+  const AFTER = '&notaVinnuToflu=0';
 
-  if (index === undefined) {
-    return null;
-  }
 
-  const response = await fetch(`https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=${index}&notaVinnuToflu=0`);
+  const response = await fetch(`${PRE}${index}${AFTER}`);
 
   const result = await response.text();
 
@@ -105,6 +97,31 @@ async function getTests(slug) {
   await asyncSet(slug, JSON.stringify(finalResult), 'EX', 30);
 
   return finalResult;
+}
+
+/**
+ * Sækir svið eftir `slug`. Fáum gögn annaðhvort beint frá vef eða úr cache.
+ *
+ * @param {string} slug - Slug fyrir svið sem skal sækja
+ * @returns {Promise} Promise sem mun innihalda gögn fyrir svið eða null ef það finnst ekki
+ */
+async function getTests(slug) {
+  const cached = await asyncGet(slug);
+  if (cached) {
+    return JSON.parse(cached);
+  }
+
+  let index = departments.findIndex(item => slug === item.slug);
+
+  if (index === undefined) {
+    return null;
+  }
+
+  index += 1;
+  const result = await scrape(index, slug);
+
+
+  return result;
 }
 /**
  * Hreinsar cache.
