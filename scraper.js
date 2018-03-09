@@ -10,7 +10,7 @@ const util = require('util');
 
 
 const redisOptions = {
-  url: 'redis://127.0.0.1:6379/0',
+  url: process.env.REDISURL,
 };
 
 const client = redis.createClient(redisOptions);
@@ -94,7 +94,10 @@ async function scrape(index, slug) {
     courses = [];
   });
 
-  await asyncSet(slug, JSON.stringify(finalResult), 'EX', 30);
+  const {
+    REDIS_EXPIRE,
+  } = process.env;
+  await asyncSet(slug, JSON.stringify(finalResult), 'EX', REDIS_EXPIRE);
 
   return finalResult;
 }
