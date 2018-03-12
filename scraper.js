@@ -23,25 +23,25 @@ const asyncClear = util.promisify(client.flushdb).bind(client);
  * að geta sótt gögn.
  */
 const departments = [{
-  name: 'Félagsvísindasvið',
-  slug: 'felagsvisindasvid',
-},
-{
-  name: 'Heilbrigðisvísindasvið',
-  slug: 'heilbrigdisvisindasvid',
-},
-{
-  name: 'Hugvísindasvið',
-  slug: 'hugvisindasvid',
-},
-{
-  name: 'Menntavísindasvið',
-  slug: 'menntavisindasvid',
-},
-{
-  name: 'Verkfræði- og náttúruvísindasvið',
-  slug: 'verkfraedi-og-natturuvisindasvid',
-},
+    name: 'Félagsvísindasvið',
+    slug: 'felagsvisindasvid',
+  },
+  {
+    name: 'Heilbrigðisvísindasvið',
+    slug: 'heilbrigdisvisindasvid',
+  },
+  {
+    name: 'Hugvísindasvið',
+    slug: 'hugvisindasvid',
+  },
+  {
+    name: 'Menntavísindasvið',
+    slug: 'menntavisindasvid',
+  },
+  {
+    name: 'Verkfræði- og náttúruvísindasvið',
+    slug: 'verkfraedi-og-natturuvisindasvid',
+  },
 ];
 
 
@@ -55,9 +55,7 @@ const departments = [{
  */
 async function scrape(index, slug) {
   const PRE = 'https://ugla.hi.is/Proftafla/View/ajax.php?sid=2027&a=getProfSvids&proftaflaID=37&svidID=';
-
   const AFTER = '&notaVinnuToflu=0';
-
 
   const response = await fetch(`${PRE}${index}${AFTER}`);
 
@@ -94,10 +92,9 @@ async function scrape(index, slug) {
     courses = [];
   });
 
-  const {
-    REDIS_EXPIRE,
-  } = process.env;
-  await asyncSet(slug, JSON.stringify(finalResult), 'EX', REDIS_EXPIRE);
+  const expire = process.env.REDIS_EXPIRE || 7200;
+
+  await asyncSet(slug, JSON.stringify(finalResult), 'EX', expire);
 
   return finalResult;
 }
@@ -110,6 +107,7 @@ async function scrape(index, slug) {
  */
 async function getTests(slug) {
   const cached = await asyncGet(slug);
+
   if (cached) {
     return JSON.parse(cached);
   }
@@ -123,7 +121,6 @@ async function getTests(slug) {
   index += 1;
   const result = await scrape(index, slug);
 
-
   return result;
 }
 /**
@@ -131,6 +128,7 @@ async function getTests(slug) {
  *
  * @returns {Promise} Promise sem mun innihalda boolean um hvort cache hafi verið hreinsað eða ekki.
  */
+
 async function clearCache() {
   /* todo */
   const result = await asyncClear();
@@ -148,8 +146,8 @@ async function clearCache() {
  * @returns {Promise} Promise sem mun innihalda object með tölfræði um próf
  */
 async function getStats() {
-  /* todo */
   const data = [];
+
   departments.forEach((i) => {
     data.push(getTests(i.slug));
   });
@@ -159,6 +157,7 @@ async function getStats() {
   let numStudents = 0;
   let numTests = 0;
   const everyNum = [];
+
   result.forEach((i) => {
     i.forEach((key) => {
       key.tests.forEach((item) => {
