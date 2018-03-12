@@ -23,25 +23,25 @@ const asyncClear = util.promisify(client.flushdb).bind(client);
  * að geta sótt gögn.
  */
 const departments = [{
-    name: 'Félagsvísindasvið',
-    slug: 'felagsvisindasvid',
-  },
-  {
-    name: 'Heilbrigðisvísindasvið',
-    slug: 'heilbrigdisvisindasvid',
-  },
-  {
-    name: 'Hugvísindasvið',
-    slug: 'hugvisindasvid',
-  },
-  {
-    name: 'Menntavísindasvið',
-    slug: 'menntavisindasvid',
-  },
-  {
-    name: 'Verkfræði- og náttúruvísindasvið',
-    slug: 'verkfraedi-og-natturuvisindasvid',
-  },
+  name: 'Félagsvísindasvið',
+  slug: 'felagsvisindasvid',
+},
+{
+  name: 'Heilbrigðisvísindasvið',
+  slug: 'heilbrigdisvisindasvid',
+},
+{
+  name: 'Hugvísindasvið',
+  slug: 'hugvisindasvid',
+},
+{
+  name: 'Menntavísindasvið',
+  slug: 'menntavisindasvid',
+},
+{
+  name: 'Verkfræði- og náttúruvísindasvið',
+  slug: 'verkfraedi-og-natturuvisindasvid',
+},
 ];
 
 
