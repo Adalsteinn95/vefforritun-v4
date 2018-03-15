@@ -174,7 +174,7 @@ async function getStats() {
     max: Math.max(...everyNum),
     numTests,
     numStudents,
-    averageStudents: numStudents / numTests,
+    averageStudents: (numStudents / numTests).toFixed(2),
   };
 }
 
